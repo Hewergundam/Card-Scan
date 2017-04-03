@@ -79,6 +79,7 @@ Arduino:
 LiquidCrystal_I2C lcd(0x27, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
 int bluetoothTx = 10;
 int bluetoothRx = 9;
+int a = 0;
 SoftwareSerial bluetooth(bluetoothTx, bluetoothRx);
 char Bluestring[16];
 void setup()
@@ -104,28 +105,27 @@ void setup()
 
 void loop()
 {
-  char a = 0;
-  int Read;
+  char Read;
   while (Serial.available())
   {
-    // Serial.println(Serial.read());
     Read = Serial.read();
-    if (Read != 2 && Read != 3 && Read != 10 && Read != 13)
-    {
-      Bluestring[a++] = Read;
+    if (Read != 2 && Read != 3 && Read != 10 && Read != 13){
+      bluetooth.print(Read);
+      a++;
     }
   }
-  //Serial.print(Bluestring);
-  bluetooth.print(Bluestring);
-  bluetooth.print('\n');
-  a = 0;
+  if (a > 11)
+  {
+    bluetooth.print('\n');
+    a = 0;
+  }
   for (int c = 0; c <= 13; c++)
   {
     Bluestring[c] = 0;
   }
   if (bluetooth.available())
   {
-    // Serial.print((char)bluetooth.read());
+    Serial.print((char)bluetooth.read());
     int blue = ((char)bluetooth.read());
     lcd.setCursor(0, 0);
     lcd.write(blue);
@@ -134,3 +134,41 @@ void loop()
 
   }
 }
+
+Processing V2:
+
+import processing.serial.*;
+Serial port;
+Table table;
+String val;
+int Read = 500;
+String Hew = "7A0092B6BAE4";
+String Chr = "7A00925C69DD";
+void setup()
+{
+  table = new Table();
+  port = new Serial(this, "COM43", 9600);
+}
+void draw()
+{
+  while (port.available() > 0) 
+  {
+    val = port.readStringUntil('\n');
+    if (val != null)
+    {
+      if (val.equals(Hew))
+      {
+        port.write("Hi Hewitt");
+        println("Got it");
+      }
+      if (val.equals(Chr))
+      {
+        port.write("Hi Christy");
+        println("Got it2");
+      }
+    }
+  }
+}
+
+
+
