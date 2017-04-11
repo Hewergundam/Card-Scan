@@ -170,5 +170,104 @@ void draw()
   }
 }
 
+Processing v3:
+
+import processing.serial.*;
+Serial port;
+Table table;
+processing.data.Table nTable;
+String val;
+String Time;
+String Date;
+int Read = 500;
+int r = -1;
+int z = 0;
+String here = "Here";
+String Hew = "7A0092B6BAE4";
+String Chr = "7A00925C69DD";
+String Alv = "82003BE03D64";
+String Hry = "82003B943A17";
+String Drk = "82003B7B8446";
+void setup()
+{
+  File d = new File(sketchPath("") + "Login.csv");
+  table = new Table();
+  nTable = new Table();
+  port = new Serial(this, "COM45", 9600);
+  nTable = loadTable("Login.csv", "header, csv");
+  if (!d.exists())
+  {
+    table = new processing.data.Table(); 
+    nTable.addColumn("Name");
+    nTable.addColumn("");
+    nTable.addColumn("Present");
+    nTable.addColumn("");
+    nTable.addColumn("Timestamp");
+    nTable.addColumn("");
+    nTable.addColumn("#");
+    nTable.addColumn("");
+    nTable.addColumn("Time");
+  } else
+    nTable = loadTable("Login.csv", "header, csv");
+}
+void draw()
+{
+
+  table.addColumn("Check", Table.STRING);
+  table.addColumn("");
+  table.addColumn("Users");
+  table.addColumn("");
+  table.addColumn("Nick");
+
+  while (port.available() > 0) 
+  {
+    val = port.readStringUntil('\n');
+    val = trim(val); 
+    //  println(val);
+    if (val != null)
+    {
+      Date = str(year()) + ' ' + str(month()) + ' '  + str(day());
+      Time = str(minute()) + ' ' + str(hour());
+      table.addRow();
+      table.setString(0, "Check", val);
+      table.setString(0, "Users", "7A0092B6BAE4");
+      table.setString(1, "Users", "7A00925C69DD");
+      table.setString(2, "Users", "82003BE03D64");
+      table.setString(3, "Users", "82003B943A17");
+      table.setString(4, "Users", "82003B7B8446");
+      table.setString(5, "Users", "82003BA0CFD6");
+      table.setString(6, "Users", "82003BD81D7C");
+      table.setString(7, "Users", "82003BD3066C");
+      table.setString(8, "Users", "82003BBAB0B3");
+      table.setString(9, "Users", "82003BB25F54");
+
+      table.setString(0, "Nick", "Hewitt");
+      table.setString(1, "Nick", "Christy");
+      table.setString(2, "Nick", "Alvarez");
+      table.setString(3, "Nick", "Henry");
+      table.setString(4, "Nick", "Derek");
+      table.setString(5, "Nick", "Tory");
+      table.setString(6, "Nick", "Peter");
+      table.setString(7, "Nick", "Noah");
+      table.setString(8, "Nick", "Aaron");
+      table.setString(9, "Nick", "Wede");
+
+      TableRow hi = table.findRow(val, "Users");
+      String y = hi.getString("Nick");  
+      port.write("Hi ");
+      port.write(y);
+      z = z + 1;
+      String q = str(z);
+      TableRow newRow = nTable.addRow();
+      newRow.setString("Name", y);
+      newRow.setString("Present", here);
+      newRow.setString("Timestamp", Date);
+      newRow.setString("Time", Time);
+      nTable.setString(0, "#", q);
+      saveTable(table, "Checkin.csv");
+      saveTable(nTable, "Login.csv");
+    }
+  }
+}
 
 
